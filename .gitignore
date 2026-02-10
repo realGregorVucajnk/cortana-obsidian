@@ -1,0 +1,10 @@
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/graph.json
+.trash/
+.DS_Store
+.hotreload/
+
+# Plugin bundles — install via Obsidian, don't redistribute
+.obsidian/plugins/*/main.js
+.obsidian/plugins/*/styles.css

@@ -1,0 +1,167 @@
+name: Vault Health
+on:
+  schedule:
+    - cron: '0 9 * * 1'  # Weekly Monday 9am UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  frontmatter-lint:
+    name: Validate Frontmatter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check required frontmatter fields
+        run: |
+          errors=0
+          shopt -s globstar nullglob
+          for file in Sessions/**/*.md; do
+            [ -f "$file" ] || continue
+            for field in date type domain status tags summary; do
+              if ! head -30 "$file" | grep -q "^${field}:"; then
+                echo "::warning file=$file::Missing frontmatter field: $field"
+                errors=$((errors + 1))
+              fi
+            done
+          done
+          echo "total_errors=$errors" >> "$GITHUB_OUTPUT"
+          if [ $errors -gt 0 ]; then
+            echo "::warning::$errors frontmatter violations found across session notes"
+          else
+            echo "All session notes have valid frontmatter"
+          fi
+
+  orphan-detection:
+    name: Find Orphan Notes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Detect notes with no links
+        run: |
+          orphans=0
+          shopt -s globstar nullglob
+          for file in Knowledge/**/*.md Sessions/**/*.md; do
+            [ -f "$file" ] || continue
+            basename_no_ext=$(basename "$file" .md)
+            # Check if any other file links to this one
+            if ! grep -rl "\[\[$basename_no_ext" . --include="*.md" | grep -v "$file" > /dev/null 2>&1; then
+              echo "ORPHAN: $file"
+              orphans=$((orphans + 1))
+            fi
+          done
+          echo "Found $orphans orphan notes"
+
+  tag-consistency:
+    name: Check Tag Vocabulary
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate tags against controlled vocabulary
+        run: |
+          # Controlled vocabulary from CLAUDE.md
+          allowed="cortana-session knowledge decision pattern learning research implementation debugging review planning exploration"
+          violations=0
+          shopt -s globstar nullglob
+          for file in Sessions/**/*.md Knowledge/**/*.md; do
+            [ -f "$file" ] || continue
+            # Extract tags from YAML frontmatter (lines starting with "  - " between --- markers)
+            in_frontmatter=false
+            in_tags=false
+            while IFS= read -r line; do
+              if [[ "$line" == "---" ]]; then
+                if $in_frontmatter; then break; fi
+                in_frontmatter=true
+                continue
+              fi
+              if $in_frontmatter && [[ "$line" =~ ^tags: ]]; then
+                in_tags=true
+                continue
+              fi
+              if $in_tags && [[ "$line" =~ ^"  - " ]]; then
+                tag=$(echo "$line" | sed 's/^  - //' | tr -d '"')
+                if ! echo "$allowed" | grep -qw "$tag"; then
+                  echo "::warning file=$file::Unapproved tag: $tag"
+                  violations=$((violations + 1))
+                fi
+              elif $in_tags && [[ ! "$line" =~ ^"  " ]]; then
+                in_tags=false
+              fi
+            done < "$file"
+          done
+          if [ $violations -gt 0 ]; then
+            echo "::warning::$violations unapproved tags found"
+          else
+            echo "All tags match controlled vocabulary"
+          fi
+
+  archive-check:
+    name: Find Archive Candidates
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List sessions older than 90 days
+        run: |
+          cutoff=$(date -d '90 days ago' +%Y-%m-%d 2>/dev/null || date -v-90d +%Y-%m-%d)
+          candidates=0
+          shopt -s globstar nullglob
+          for file in Sessions/**/*.md; do
+            [ -f "$file" ] || continue
+            file_date=$(grep "^date:" "$file" | head -1 | sed 's/^date: *//' | tr -d '"')
+            file_status=$(grep "^status:" "$file" | head -1 | sed 's/^status: *//' | tr -d '"')
+            if [[ -n "$file_date" && "$file_date" < "$cutoff" && "$file_status" == "completed" ]]; then
+              echo "ARCHIVE CANDIDATE: $file (date: $file_date)"
+              candidates=$((candidates + 1))
+            fi
+          done
+          echo "Found $candidates archive candidates"
+
+  vault-stats:
+    name: Generate Vault Statistics
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Count and report vault metrics
+        run: |
+          sessions=$(find Sessions -name '*.md' 2>/dev/null | wc -l | tr -d ' ')
+          knowledge=$(find Knowledge -name '*.md' 2>/dev/null | wc -l | tr -d ' ')
+          projects=$(find Projects -name '*.md' 2>/dev/null | wc -l | tr -d ' ')
+
+          work=$(grep -rl "domain: work" Sessions/ Knowledge/ 2>/dev/null | wc -l | tr -d ' ')
+          personal=$(grep -rl "domain: personal" Sessions/ Knowledge/ 2>/dev/null | wc -l | tr -d ' ')
+          opensource=$(grep -rl "domain: opensource" Sessions/ Knowledge/ 2>/dev/null | wc -l | tr -d ' ')
+
+          cat > /tmp/vault-stats.md << EOF
+          # Vault Statistics
+
+          *Generated: $(date -u +%Y-%m-%d)*
+
+          ## Note Counts
+
+          | Category | Count |
+          |----------|-------|
+          | Sessions | $sessions |
+          | Knowledge | $knowledge |
+          | Projects | $projects |
+
+          ## By Domain
+
+          | Domain | Count |
+          |--------|-------|
+          | work | $work |
+          | personal | $personal |
+          | opensource | $opensource |
+          EOF
+
+          # Remove leading whitespace from heredoc
+          sed -i 's/^          //' /tmp/vault-stats.md
+
+          if ! diff -q /tmp/vault-stats.md Dashboards/vault-stats.md > /dev/null 2>&1; then
+            cp /tmp/vault-stats.md Dashboards/vault-stats.md
+            git config user.name "GitHub Actions"
+            git config user.email "actions@github.com"
+            git add Dashboards/vault-stats.md
+            git diff --cached --quiet || git commit -m "stats: update vault statistics" && git push
+          fi
