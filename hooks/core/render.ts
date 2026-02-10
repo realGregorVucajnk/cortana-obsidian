@@ -20,6 +20,64 @@ export function renderSessionNote(note: SessionNotePayload): string {
   const tags = ['cortana-session', note.sessionType];
   const oneLine = note.summary.split('\n')[0].replace(/"/g, '\\"').slice(0, 200);
 
+  const enrichmentBlock = note.enrichment
+    ? (() => {
+        const decisions =
+          note.enrichment.keyDecisions.length > 0
+            ? note.enrichment.keyDecisions
+                .map((d) => `- ${d.decision} (${Math.round(d.confidence * 100)}%)\nWhy: ${d.rationale}`)
+                .join('\n')
+            : '- No explicit decisions extracted.';
+
+        const recommendations =
+          note.enrichment.recommendations.length > 0
+            ? note.enrichment.recommendations
+                .map(
+                  (r) =>
+                    `- [${r.kind}] ${r.title} (${Math.round(r.confidence * 100)}%)\n${r.summary}\nWhy: ${r.rationale}`,
+                )
+                .join('\n')
+            : '- No recommendations.';
+
+        const gitContext = note.enrichment.git.available
+          ? [
+              `- Repo: \`${note.enrichment.git.repoRoot}\``,
+              `- Branch: \`${note.enrichment.git.branch}\``,
+              `- HEAD: \`${note.enrichment.git.headSha}\``,
+              `- Changed files (working tree): ${note.enrichment.git.workingTreeFiles}`,
+              `- Changed files (staged): ${note.enrichment.git.stagedFiles}`,
+              `- Diff stats: +${note.enrichment.git.insertions} / -${note.enrichment.git.deletions}`,
+              '- Top paths:',
+              ...(note.enrichment.git.changedFiles.length > 0
+                ? note.enrichment.git.changedFiles.map((f) => `  - \`${f}\``)
+                : ['  - (none)']),
+            ].join('\n')
+          : '- Git context unavailable.';
+
+        return `## Executive Summary
+
+${note.enrichment.executiveSummary.map((line) => `- ${line}`).join('\n')}
+
+## Key Decisions and Why
+
+${decisions}
+
+## Recommended to Save
+
+${recommendations}
+
+## Digest
+
+${note.enrichment.digest}
+
+## Git Context
+
+${gitContext}
+
+`;
+      })()
+    : '';
+
   let content = `---
 date: ${date}
 time: "${time}"
@@ -40,7 +98,7 @@ session_id: "${note.sessionId}"${note.project ? `\nproject: "${note.project}"` :
 
 ${note.summary}
 
-${note.enrichment ? `## Executive Summary\n\n${note.enrichment.executiveSummary.map((line) => `- ${line}`).join('\n')}\n\n## Key Decisions and Why\n\n${note.enrichment.keyDecisions.length > 0 ? note.enrichment.keyDecisions.map((d) => `- ${d.decision} (${Math.round(d.confidence * 100)}%)\\n  - Why: ${d.rationale}`).join('\n') : '- No explicit decisions extracted.'}\n\n## Recommended to Save\n\n${note.enrichment.recommendations.length > 0 ? note.enrichment.recommendations.map((r) => `- [${r.kind}] ${r.title} (${Math.round(r.confidence * 100)}%)\\n  - ${r.summary}\\n  - Why: ${r.rationale}`).join('\n') : '- No recommendations.'}\n\n## Digest\n\n${note.enrichment.digest}\n\n## Git Context\n\n${note.enrichment.git.available ? `- Repo: \`${note.enrichment.git.repoRoot}\`\\n- Branch: \`${note.enrichment.git.branch}\`\\n- HEAD: \`${note.enrichment.git.headSha}\`\\n- Changed files (working tree): ${note.enrichment.git.workingTreeFiles}\\n- Changed files (staged): ${note.enrichment.git.stagedFiles}\\n- Diff stats: +${note.enrichment.git.insertions} / -${note.enrichment.git.deletions}\\n- Top paths:\\n${note.enrichment.git.changedFiles.map((f) => `  - \`${f}\``).join('\n') || '  - (none)'}` : '- Git context unavailable.'}\n\n` : ''}
+${enrichmentBlock}
 
 ## Session Details
 

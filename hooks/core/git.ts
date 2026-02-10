@@ -15,6 +15,13 @@ function runGit(args: string[], cwd: string): string {
   }
 }
 
+function cleanChangedPath(input: string): string {
+  return input
+    .replace(/^([ MARCUD?!]{1,2})\s+/, '')
+    .replace(/^([A-Z?]{1,2})\s+/, '')
+    .trim();
+}
+
 function findGitRoot(startPath: string): string {
   let current = startPath;
 
@@ -58,7 +65,11 @@ export function collectGitSnapshot(startPath: string): GitSnapshot {
   const changed = porcelain
     .split('\n')
     .filter((line) => line.trim().length > 0)
-    .map((line) => (line.length > 3 ? line.slice(3).trim() : line.trim()))
+    .map((line) => {
+      const match = line.match(/^..\\s+(.*)$/);
+      const raw = match?.[1]?.trim() || line.trim();
+      return cleanChangedPath(raw);
+    })
     .filter(Boolean);
 
   const workingTreeFiles = porcelain
@@ -88,7 +99,7 @@ export function collectGitSnapshot(startPath: string): GitSnapshot {
     headSha,
     workingTreeFiles,
     stagedFiles,
-    changedFiles: changed.slice(0, 10),
+    changedFiles: changed.slice(0, 10).map((path) => cleanChangedPath(path)),
     insertions,
     deletions,
   };
