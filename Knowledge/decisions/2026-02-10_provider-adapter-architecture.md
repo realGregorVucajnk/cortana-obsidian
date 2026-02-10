@@ -62,6 +62,6 @@ Option B was chosen because:
 
 ## Related Notes
 
-- [[2026-02-10_hook-pipeline-refactoring]] — Session where this was implemented
+- [[2026-02-10_0827_hook-pipeline-refactoring]] — Session where this was implemented
 - [[2026-02-10_hook-delegation-pattern]] — Pattern: wrapper delegates to adapter
-- [[2026-02-10_project-genesis-research]] — Research into other tools' hook systems
+- [[2026-02-10_1530_project-genesis-research]] — Research into other tools' hook systems

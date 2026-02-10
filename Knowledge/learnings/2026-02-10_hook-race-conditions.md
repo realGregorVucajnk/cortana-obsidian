@@ -69,4 +69,4 @@ This pattern appears in any system with:
 
 - [[2026-02-10_fallback-strategy-for-deleted-state]] — Decision record for the fallback approach
 - [[2026-02-09_hook-state-file-contracts]] — The schema fix that revealed this second bug
-- [[2026-02-10_hook-fixes-verification]] — Verification that the fix works end-to-end
+- [[2026-02-10_1609_hook-fixes-verification]] — Verification that the fix works end-to-end

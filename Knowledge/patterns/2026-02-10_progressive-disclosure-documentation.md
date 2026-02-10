@@ -63,4 +63,4 @@ Layer 4: docs/session-intelligence/architecture.md
 
 ## Related Notes
 
-- [[2026-02-10_newcomer-documentation]] — Session where this pattern was applied
+- [[2026-02-10_1402_newcomer-documentation]] — Session where this pattern was applied

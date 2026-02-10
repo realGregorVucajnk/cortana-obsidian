@@ -70,6 +70,6 @@ This normalizes across tools while preserving tool-specific data in `payload`.
 
 ## Related Notes
 
-- [[2026-02-10_hook-pipeline-refactoring]] — Current Claude-specific adapter that would become one provider
+- [[2026-02-10_0827_hook-pipeline-refactoring]] — Current Claude-specific adapter that would become one provider
 - [[2026-02-10_provider-adapter-architecture]] — Decision that enables multi-provider support
 - [[2026-02-10_fallback-strategy-for-deleted-state]] — File-based state problems observed here too

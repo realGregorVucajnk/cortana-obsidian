@@ -72,4 +72,4 @@ Used **progressive disclosure** — see [[2026-02-10_progressive-disclosure-docu
 ## Related Notes
 
 - [[2026-02-10_progressive-disclosure-documentation]] — Pattern used for doc layering
-- [[2026-02-10_hook-pipeline-refactoring]] — The system being documented
+- [[2026-02-10_0827_hook-pipeline-refactoring]] — The system being documented

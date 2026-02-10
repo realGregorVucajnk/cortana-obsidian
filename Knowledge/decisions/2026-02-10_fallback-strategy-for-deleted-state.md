@@ -79,5 +79,5 @@ function findRecentActiveSession(): SessionContext | null {
 ## Related Notes
 
 - [[2026-02-10_hook-race-conditions]] — Learning about parallel hook execution
-- [[2026-02-09_hook-debugging-marathon]] — Session that discovered the race condition
+- [[2026-02-09_2019_hook-debugging-marathon]] — Session that discovered the race condition
 - [[2026-02-09_hook-state-file-contracts]] — Learning about shared state fragility

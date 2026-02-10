@@ -91,4 +91,4 @@ Audit logs are append-only and queryable via `/api/v1/projects/:id/audit`.
 
 ## Related Notes
 
-- [[2026-02-10_newcomer-documentation]] — Same documentation-first approach applied to a different project
+- [[2026-02-10_1402_newcomer-documentation]] — Same documentation-first approach applied to a different project

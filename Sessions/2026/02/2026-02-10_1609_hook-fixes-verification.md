@@ -19,7 +19,7 @@ isc_total: 4
 
 ## Context
 
-After the major refactoring session ([[2026-02-10_hook-pipeline-refactoring]]) and intelligence design ([[2026-02-10_session-intelligence-design]]), this session focused on verifying everything actually worked end-to-end. Previous debugging had revealed that hooks are snapshotted at session start, so fixes only take effect in subsequent sessions — making verification a separate, deliberate activity.
+After the major refactoring session ([[2026-02-10_0827_hook-pipeline-refactoring]]) and intelligence design ([[2026-02-10_1143_session-intelligence-design]]), this session focused on verifying everything actually worked end-to-end. Previous debugging had revealed that hooks are snapshotted at session start, so fixes only take effect in subsequent sessions — making verification a separate, deliberate activity.
 
 ## Issues Found and Fixed
 
@@ -68,5 +68,5 @@ Commit: `7daad03` (+60/-1 in `render.ts`)
 
 ## Related Notes
 
-- [[2026-02-10_hook-pipeline-refactoring]] — The refactoring being verified
+- [[2026-02-10_0827_hook-pipeline-refactoring]] — The refactoring being verified
 - [[2026-02-10_hook-race-conditions]] — Learning about parallel hook execution

@@ -88,5 +88,5 @@ This commit includes the full session intelligence implementation along with que
 ## Related Notes
 
 - [[2026-02-10_enrichment-mode-defaults]] — Decision: why inline is the default
-- [[2026-02-10_hook-pipeline-refactoring]] — The refactoring that made this possible
+- [[2026-02-10_0827_hook-pipeline-refactoring]] — The refactoring that made this possible
 - [[2026-02-10_progressive-disclosure-documentation]] — Documentation pattern used for the runbook

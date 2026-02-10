@@ -63,4 +63,4 @@ COPY --from=builder /usr/local/bin/openclaw /usr/local/bin/
 
 ## Related Notes
 
-- [[2026-02-10_hook-pipeline-refactoring]] — Same day, different project — context switching between vault infra and OSS contributions
+- [[2026-02-10_0827_hook-pipeline-refactoring]] — Same day, different project — context switching between vault infra and OSS contributions

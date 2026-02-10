@@ -49,5 +49,5 @@ Three hooks consumed `current-work.json` written by `AutoWorkCreation`. All thre
 ## Related Notes
 
 - [[2026-02-09_2019_hook-debugging-marathon]] — Session where these bugs were discovered
-- [[2026-02-10_hook-pipeline-refactoring]] — Refactoring that formalized the shared types
+- [[2026-02-10_0827_hook-pipeline-refactoring]] — Refactoring that formalized the shared types
 - [[2026-02-10_fallback-strategy-for-deleted-state]] — Related decision about state file fragility

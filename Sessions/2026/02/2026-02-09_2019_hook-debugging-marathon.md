@@ -73,4 +73,4 @@ a26f124 2026-02-09 20:25 Remove DEBUG.md after confirming hook fixes work
 
 - [[2026-02-09_hook-state-file-contracts]] — Learning: validate schemas against actual producers
 - [[2026-02-10_hook-race-conditions]] — Follow-up learning about parallel execution
-- [[2026-02-10_hook-pipeline-refactoring]] — The refactoring motivated by this debugging session
+- [[2026-02-10_0827_hook-pipeline-refactoring]] — The refactoring motivated by this debugging session

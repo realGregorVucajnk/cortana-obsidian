@@ -54,5 +54,5 @@ The vault was born from the pain of metadata-only shells. Defaulting to `async` 
 
 ## Related Notes
 
-- [[2026-02-10_session-intelligence-design]] — Full design of the enrichment system
+- [[2026-02-10_1143_session-intelligence-design]] — Full design of the enrichment system
 - [[2026-02-10_fallback-strategy-for-deleted-state]] — Related: graceful degradation philosophy

@@ -75,4 +75,4 @@ handleSessionEnd();
 ## Related Notes
 
 - [[2026-02-10_provider-adapter-architecture]] — Decision that created this pattern
-- [[2026-02-10_hook-pipeline-refactoring]] — Session where it was applied
+- [[2026-02-10_0827_hook-pipeline-refactoring]] — Session where it was applied
