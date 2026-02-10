@@ -79,6 +79,37 @@ Only use these tags to keep the vault searchable and consistent:
 | Session transcripts | `Sessions/` | Claude Code -> Vault (via hook) |
 | Decision records | `Knowledge/decisions/` | Vault is source of truth |
 
+## Hook Pipeline (Session Capture)
+
+The vault is populated automatically by the `ObsidianSessionCapture` hook (`~/.claude/hooks/ObsidianSessionCapture.hook.ts`), which runs at `SessionEnd`.
+
+### Data Flow
+
+```
+UserPromptSubmit → AutoWorkCreation → creates WORK/{session}/ + current-work.json
+SessionEnd → ObsidianSessionCapture → reads current-work.json → creates Sessions/ note
+SessionEnd → SessionSummary → marks WORK/ COMPLETED → deletes current-work.json
+```
+
+### Key Behaviors
+
+- **Significance filter**: Skips sessions with trivial titles (acknowledgment, greeting, etc.) and `task_count < 2`. Does NOT use ISC.json criteria (those are scaffolded empty and never populated by the hook pipeline).
+- **Race condition fallback**: If `current-work.json` is already deleted by `SessionSummary`, the hook falls back to scanning `WORK/` for the most recent ACTIVE/COMPLETED session.
+- **Project detection**: Extracts project name from the transcript path (e.g., `~/work/project-genesis/` → `project: "project-genesis"`). Also handles encoded Claude Code paths.
+- **Domain detection**: Maps transcript path to `work|personal|opensource` based on workspace directory.
+
+### Known Issues (Fixed 2026-02-10)
+
+| Issue | Root Cause | Fix |
+|-------|-----------|-----|
+| 100% session rejection | Significance filter checked ISC.json criteria (never populated) | Changed to title-pattern matching |
+| ~50% "No current-work.json" | Race condition with SessionSummary deleting file | Added `findRecentActiveSession()` fallback |
+| Empty "By Project" dashboard | No `project` field in generated notes | Added `detectProject()` from transcript path |
+
+### Hook Snapshotting
+
+Hooks are loaded at **session start**. Changes to hook files only take effect when a **new session** begins, not mid-session.
+
 ## Anti-Patterns
 
 - **No memory duplication** — Don't copy Claude Code's auto-memory verbatim. Summarize and enrich.
