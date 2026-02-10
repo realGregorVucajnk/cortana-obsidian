@@ -20,8 +20,12 @@ jobs:
           shopt -s globstar nullglob
           for file in Sessions/**/*.md; do
             [ -f "$file" ] || continue
+            frontmatter=$(awk '
+              /^---$/ { c++; if (c==1) next; if (c==2) exit }
+              c==1 { print }
+            ' "$file")
             for field in date type domain status tags summary; do
-              if ! head -30 "$file" | grep -q "^${field}:"; then
+              if ! printf "%s\n" "$frontmatter" | grep -Eq "^${field}:[[:space:]]*"; then
                 echo "::warning file=$file::Missing frontmatter field: $field"
                 errors=$((errors + 1))
               fi
@@ -80,13 +84,13 @@ jobs:
                 in_tags=true
                 continue
               fi
-              if $in_tags && [[ "$line" =~ ^"  - " ]]; then
-                tag=$(echo "$line" | sed 's/^  - //' | tr -d '"')
+              if $in_tags && [[ "$line" =~ ^[[:space:]]*-[[:space:]]+ ]]; then
+                tag=$(echo "$line" | sed -E 's/^[[:space:]]*-[[:space:]]+//' | tr -d '"' | xargs)
                 if ! echo "$allowed" | grep -qw "$tag"; then
                   echo "::warning file=$file::Unapproved tag: $tag"
                   violations=$((violations + 1))
                 fi
-              elif $in_tags && [[ ! "$line" =~ ^"  " ]]; then
+              elif $in_tags && [[ ! "$line" =~ ^[[:space:]]+ ]]; then
                 in_tags=false
               fi
             done < "$file"
@@ -158,7 +162,7 @@ jobs:
           # Remove leading whitespace from heredoc
           sed -i 's/^          //' /tmp/vault-stats.md
 
-          if ! diff -q /tmp/vault-stats.md Dashboards/vault-stats.md > /dev/null 2>&1; then
+          if [ ! -f Dashboards/vault-stats.md ] || ! diff -q /tmp/vault-stats.md Dashboards/vault-stats.md > /dev/null 2>&1; then
             cp /tmp/vault-stats.md Dashboards/vault-stats.md
             git config user.name "GitHub Actions"
             git config user.email "actions@github.com"

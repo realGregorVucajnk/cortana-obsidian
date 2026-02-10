@@ -1,10 +1,10 @@
-# Obsidian + Claude Code Knowledge Vault
+# Obsidian AI Knowledge Vault
 
-A template for building a persistent knowledge base that automatically captures [Claude Code](https://docs.anthropic.com/en/docs/claude-code) session outputs, decisions, patterns, and learnings in [Obsidian](https://obsidian.md).
+A template for building a persistent knowledge base that captures AI session outputs, decisions, patterns, and learnings in [Obsidian](https://obsidian.md).
 
 ## What This Does
 
-- **Auto-captures sessions** — Claude Code hooks create structured Obsidian notes at session end
+- **Auto-captures sessions** — Provider adapters for Claude and Codex create structured Obsidian notes
 - **Dashboards** — Dataview-powered views of sessions by date, domain, project, and type
 - **Knowledge distillation** — Extract durable insights from session logs into reusable knowledge notes
 - **Vault health** — GitHub Actions validates frontmatter, tags, and detects orphan notes
@@ -14,7 +14,7 @@ A template for building a persistent knowledge base that automatically captures 
 1. Use this template or clone the repo
 2. Open the folder as a vault in Obsidian
 3. Install required plugins (Obsidian will prompt — manifests are pre-configured)
-4. Copy hook files to your Claude Code setup (see [HOOKS.md](./HOOKS.md))
+4. Configure your provider hooks (see [HOOKS.md](./HOOKS.md))
 
 ## Folder Structure
 
@@ -29,7 +29,7 @@ A template for building a persistent knowledge base that automatically captures 
 ├── Templates/          # Templater templates for note creation
 ├── Dashboards/         # Dataview-powered overview pages
 ├── _archive/           # Completed or superseded notes
-├── hooks/              # Standalone Claude Code hook examples
+├── hooks/              # Shared core + provider hook adapters
 ├── .github/workflows/  # Vault health CI
 └── .obsidian/          # Plugin configs (manifests + settings, no bundles)
 ```
@@ -37,8 +37,9 @@ A template for building a persistent knowledge base that automatically captures 
 ## Documentation
 
 - **[CLAUDE.md](./CLAUDE.md)** — Vault conventions, frontmatter schema, controlled tags
-- **[HOOKS.md](./HOOKS.md)** — Claude Code hook setup and configuration
-- **[hooks/](./hooks/)** — Standalone hook implementations (copy to `~/.claude/hooks/`)
+- **[HOOKS.md](./HOOKS.md)** — Hook architecture and provider matrix
+- **[HOOKS.claude.md](./HOOKS.claude.md)** — Claude setup guide
+- **[HOOKS.codex.md](./HOOKS.codex.md)** — Codex setup guide
 
 ## Required Plugins
 

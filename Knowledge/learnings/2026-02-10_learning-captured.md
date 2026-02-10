@@ -3,11 +3,12 @@ title: "Learning Captured"
 date: 2026-02-10T11:36:12-05:00
 type: learning
 domain: work
+status: active
+summary: "Learning Captured"
 source_sessions: []
 tags:
   - knowledge
   - learning
-  - domain/work
 ---
 
 # Learning Captured

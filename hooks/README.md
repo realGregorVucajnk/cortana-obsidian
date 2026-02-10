@@ -1,67 +1,41 @@
-# Claude Code Hooks
+# Hooks Package
 
-Standalone hook implementations for automatic Obsidian note capture. These have **no external dependencies** beyond Bun.
+Provider-delineated hooks for vault capture.
 
-## Setup
+## Layout
 
-### 1. Copy hooks to Claude Code
+- `core/` shared parsing, inference, rendering, file-writing logic
+- `providers/claude/` Claude adapters (PAI-aware)
+- `providers/codex/` Codex adapters (transcript-only)
+- root wrappers:
+  - `session-capture.hook.ts` -> Claude SessionEnd adapter
+  - `learning-sync.hook.ts` -> Claude Stop adapter
 
-```bash
-cp session-capture.hook.ts ~/.claude/hooks/
-cp learning-sync.hook.ts ~/.claude/hooks/
-```
+## Which scripts to run
 
-### 2. Add to `~/.claude/settings.json`
+### Claude
 
-```json
-{
-  "hooks": {
-    "SessionEnd": [
-      {
-        "type": "command",
-        "command": "bun ~/.claude/hooks/session-capture.hook.ts"
-      }
-    ],
-    "Stop": [
-      {
-        "type": "command",
-        "command": "bun ~/.claude/hooks/learning-sync.hook.ts"
-      }
-    ]
-  }
-}
-```
-
-### 3. Set vault path
+Use root wrappers for backward compatibility:
 
 ```bash
-# In your shell profile (~/.zshrc, ~/.bashrc, etc.)
-export OBSIDIAN_VAULT=~/path/to/your/vault
+bun hooks/session-capture.hook.ts
+bun hooks/learning-sync.hook.ts
 ```
 
-If not set, hooks default to `~/obsidian-vault`.
+### Codex
 
-## How It Works
+Use provider scripts directly:
 
-### session-capture.hook.ts
-
-Fires at **SessionEnd**. Reads session metadata from `~/.claude/MEMORY/WORK/` and creates a structured note in `Sessions/YYYY/MM/`.
-
-**Requires:** A work-tracking system that writes `~/.claude/MEMORY/STATE/current-work.json` with session metadata. If you don't have one, you'll need to create a UserPromptSubmit hook that populates this file, or adapt the session capture hook to read from your own state format.
-
-### learning-sync.hook.ts
-
-Fires at **Stop** (after each Claude response). Reads the transcript, checks for learning-related keywords, and creates a knowledge note in `Knowledge/learnings/`.
-
-**Requires:** Nothing beyond the transcript path provided via stdin.
+```bash
+bun hooks/providers/codex/session-end.hook.ts
+bun hooks/providers/codex/stop.hook.ts
+```
 
 ## Environment Variables
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `OBSIDIAN_VAULT` | `~/obsidian-vault` | Path to your Obsidian vault |
-| `ASSISTANT_NAME` | `Claude` | Name shown in session notes |
-
-## Extending
-
-These hooks are starting points. To add AI-powered summaries, replace the `summary = title` line in `session-capture.hook.ts` with a call to your preferred inference API.
+| `OBSIDIAN_VAULT` | `~/obsidian-vault` | Vault path |
+| `ASSISTANT_NAME` | provider default | Assistant label in notes |
+| `ASSISTANT_MODEL` | unset | Optional model fallback |
+| `SESSION_CAPTURE_AUTO_COMMIT` | `false` | Claude session adapter only |
