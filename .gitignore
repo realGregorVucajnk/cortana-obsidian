@@ -4,6 +4,7 @@
 .trash/
 .DS_Store
 .hotreload/
+.hooks-queue/
 
 # Plugin bundles — install via Obsidian, don't redistribute
 .obsidian/plugins/*/main.js

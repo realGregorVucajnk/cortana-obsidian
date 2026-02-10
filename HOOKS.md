@@ -1,46 +1,69 @@
 # Hook Integration
 
-This repository now supports a **provider-delineated hook architecture**:
+## Architecture
 
-- Shared normalization/rendering core in `hooks/core/`
-- Claude adapters in `hooks/providers/claude/`
-- Codex adapters in `hooks/providers/codex/`
-- Backward-compatible Claude wrapper entrypoints:
+This repo uses a provider-delineated hook stack:
+
+- Shared intelligence core: `hooks/core/`
+- Claude adapters: `hooks/providers/claude/`
+- Codex adapters: `hooks/providers/codex/`
+- Claude compatibility wrappers:
   - `hooks/session-capture.hook.ts`
   - `hooks/learning-sync.hook.ts`
 
+## Session Intelligence Methods
+
+- Method A (active): inline SessionEnd enrichment + auto-distill.
+- Method B (implemented scaffold): async queue + worker flow.
+- Method C (planned): hybrid inline + async upgrade path.
+
+Roadmap/docs:
+- `docs/session-intelligence/architecture.md`
+- `docs/session-intelligence/roadmap.md`
+- `docs/session-intelligence/runbook.md`
+
 ## Provider Matrix
 
-| Provider | SessionEnd Script | Stop Script | State Dependency |
-|----------|-------------------|-------------|------------------|
-| Claude | `hooks/providers/claude/session-end.hook.ts` | `hooks/providers/claude/stop.hook.ts` | `~/.claude/MEMORY/*` (with fallback) |
-| Codex | `hooks/providers/codex/session-end.hook.ts` | `hooks/providers/codex/stop.hook.ts` | Transcript-only inference |
+| Provider | SessionEnd | Stop | State Dependency |
+|----------|------------|------|------------------|
+| Claude | `hooks/providers/claude/session-end.hook.ts` | `hooks/providers/claude/stop.hook.ts` | `~/.claude/MEMORY/*` (fallback supported) |
+| Codex | `hooks/providers/codex/session-end.hook.ts` | `hooks/providers/codex/stop.hook.ts` | Transcript-first |
 
-## Compatibility
+## Enrichment Modes
 
-Existing Claude hook setups do not need command changes immediately.
+| Mode | Behavior |
+|------|----------|
+| `inline` | SessionEnd computes enrichment immediately and writes enriched note |
+| `async` | SessionEnd enqueues enrichment job; worker processes queue |
+| `hybrid` | SessionEnd does inline enrichment and also enqueues async job |
 
-The root scripts:
-- `hooks/session-capture.hook.ts`
-- `hooks/learning-sync.hook.ts`
+## Environment Variables
 
-are wrappers that delegate to Claude adapters.
+Shared:
+- `OBSIDIAN_VAULT`
+- `ASSISTANT_NAME`
+- `ASSISTANT_MODEL`
 
-## Detailed Setup Guides
+Enrichment controls:
+- `ENRICHMENT_MODE=inline|async|hybrid`
+- `SESSION_SUMMARY_ENABLED=true|false`
+- `AUTO_DISTILL_ENABLED=true|false`
+- `AUTO_DISTILL_MAX_NOTES`
+- `AUTO_DISTILL_CONFIDENCE_THRESHOLD`
+- `SESSION_SUMMARY_MODEL`
+- `CLAUDE_SUMMARY_MODEL`
+- `CODEX_SUMMARY_MODEL`
+- `OPENAI_API_KEY` (for default OpenAI-compatible summary calls)
+- `OPENAI_BASE_URL` (optional custom OpenAI-compatible endpoint)
+- `LOCAL_SUMMARY_PROVIDER=ollama`
+- `OLLAMA_HOST`
+- `OLLAMA_MODEL`
 
-- `HOOKS.claude.md` — Claude + PAI-oriented setup and behavior
-- `HOOKS.codex.md` — Codex transcript-driven setup
+Claude-only:
+- `SESSION_CAPTURE_AUTO_COMMIT=true|false`
 
-## Shared Environment Variables
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `OBSIDIAN_VAULT` | `~/obsidian-vault` | Path to your Obsidian vault |
-| `ASSISTANT_NAME` | Provider default | Assistant label written in notes |
-| `ASSISTANT_MODEL` | unset | Optional model fallback in note frontmatter |
-
-## Claude-Only Environment Variables
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `SESSION_CAPTURE_AUTO_COMMIT` | `false` | Enable auto git add/commit for captured session notes |
+Queue/worker:
+- `QUEUE_RUN_FOREVER=true|false`
+- `QUEUE_POLL_MS`
+- `QUEUE_MAX_ATTEMPTS`
+- `QUEUE_BACKOFF_MS`

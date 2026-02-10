@@ -95,6 +95,9 @@ For provider-delineated docs, see:
 - `HOOKS.md`
 - `HOOKS.claude.md`
 - `HOOKS.codex.md`
+- `docs/session-intelligence/architecture.md`
+- `docs/session-intelligence/roadmap.md`
+- `docs/session-intelligence/runbook.md`
 
 ### Session Capture Key Behaviors
 
@@ -104,6 +107,7 @@ For provider-delineated docs, see:
 - **Domain detection**: Maps transcript path to `work|personal|opensource` based on workspace directory.
 - **Model detection**: Reads model from transcript metadata when present, with optional `ASSISTANT_MODEL` fallback.
 - **Git commit policy**: Auto-commit is disabled by default and enabled only when `SESSION_CAPTURE_AUTO_COMMIT=true`.
+- **Session intelligence**: SessionEnd supports `ENRICHMENT_MODE=inline|async|hybrid` with Method A active by default and Method B queue scaffold available.
 
 ### Learning Sync Key Behaviors
 

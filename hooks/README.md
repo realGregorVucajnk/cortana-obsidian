@@ -1,41 +1,50 @@
 # Hooks Package
 
-Provider-delineated hooks for vault capture.
+Provider-delineated hooks with session intelligence enrichment.
 
 ## Layout
 
-- `core/` shared parsing, inference, rendering, file-writing logic
-- `providers/claude/` Claude adapters (PAI-aware)
-- `providers/codex/` Codex adapters (transcript-only)
+- `core/` shared parsing, enrichment, rendering, queue utilities
+- `providers/claude/` Claude adapters
+- `providers/codex/` Codex adapters
+- `workers/` async processing workers (Method B)
 - root wrappers:
   - `session-capture.hook.ts` -> Claude SessionEnd adapter
   - `learning-sync.hook.ts` -> Claude Stop adapter
 
-## Which scripts to run
+## Session Intelligence Methods
 
-### Claude
+- Method A: inline enrichment (active default)
+- Method B: async queue + worker (implemented scaffold)
+- Method C: hybrid (documented roadmap)
 
-Use root wrappers for backward compatibility:
+## Commands
+
+Claude wrappers:
 
 ```bash
 bun hooks/session-capture.hook.ts
 bun hooks/learning-sync.hook.ts
 ```
 
-### Codex
-
-Use provider scripts directly:
+Codex provider scripts:
 
 ```bash
 bun hooks/providers/codex/session-end.hook.ts
 bun hooks/providers/codex/stop.hook.ts
 ```
 
-## Environment Variables
+Worker:
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `OBSIDIAN_VAULT` | `~/obsidian-vault` | Vault path |
-| `ASSISTANT_NAME` | provider default | Assistant label in notes |
-| `ASSISTANT_MODEL` | unset | Optional model fallback |
-| `SESSION_CAPTURE_AUTO_COMMIT` | `false` | Claude session adapter only |
+```bash
+QUEUE_RUN_FOREVER=true bun hooks/workers/enrichment-worker.ts
+```
+
+## Docs
+
+- `HOOKS.md`
+- `HOOKS.claude.md`
+- `HOOKS.codex.md`
+- `docs/session-intelligence/architecture.md`
+- `docs/session-intelligence/roadmap.md`
+- `docs/session-intelligence/runbook.md`

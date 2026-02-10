@@ -40,6 +40,9 @@ A template for building a persistent knowledge base that captures AI session out
 - **[HOOKS.md](./HOOKS.md)** — Hook architecture and provider matrix
 - **[HOOKS.claude.md](./HOOKS.claude.md)** — Claude setup guide
 - **[HOOKS.codex.md](./HOOKS.codex.md)** — Codex setup guide
+- **[docs/session-intelligence/architecture.md](./docs/session-intelligence/architecture.md)** — Method A/B/C architecture
+- **[docs/session-intelligence/roadmap.md](./docs/session-intelligence/roadmap.md)** — Forward roadmap and phase gates
+- **[docs/session-intelligence/runbook.md](./docs/session-intelligence/runbook.md)** — Operational runbook
 
 ## Required Plugins
 

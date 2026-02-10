@@ -82,6 +82,39 @@ export function detectModelFromTranscript(transcriptPath: string): string {
   return '';
 }
 
+export function readTranscriptExcerpt(transcriptPath: string, maxLines = 120): string {
+  if (!transcriptPath || !existsSync(transcriptPath)) return '';
+
+  try {
+    const lines = readFileSync(transcriptPath, 'utf-8').split('\n').filter((line) => line.trim().length > 0);
+    const selected = lines.slice(Math.max(0, lines.length - maxLines));
+    const out: string[] = [];
+
+    for (const line of selected) {
+      try {
+        const entry = JSON.parse(line);
+        const role = entry?.role || 'unknown';
+        let text = '';
+        if (typeof entry?.content === 'string') {
+          text = entry.content;
+        } else if (Array.isArray(entry?.content)) {
+          text = entry.content
+            .filter((c: any) => c?.type === 'text')
+            .map((c: any) => c?.text || '')
+            .join('\n');
+        }
+        if (text.trim()) out.push(`[${role}] ${text.trim()}`);
+      } catch {
+        // Ignore malformed line.
+      }
+    }
+
+    return out.join('\n').slice(0, 12000);
+  } catch {
+    return '';
+  }
+}
+
 export function nextAvailableFilePath(baseDir: string, baseName: string): string {
   const first = join(baseDir, `${baseName}.md`);
   if (!existsSync(first)) return first;

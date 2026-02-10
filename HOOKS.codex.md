@@ -1,17 +1,13 @@
 # Codex Hook Setup
 
-This guide configures Codex-oriented hooks with no dependency on `~/.claude/MEMORY/*`.
+Codex adapters are transcript-first and do not depend on `.claude/MEMORY/*`.
 
-## Use Codex Provider Scripts
+## Use Scripts
 
 - `hooks/providers/codex/session-end.hook.ts`
 - `hooks/providers/codex/stop.hook.ts`
 
-These adapters are transcript-first and infer metadata from transcript path/content.
-
-## Runtime Contract
-
-Expected stdin payload shape:
+## Expected stdin payload
 
 ```json
 {
@@ -21,26 +17,36 @@ Expected stdin payload shape:
 }
 ```
 
-If your Codex runtime uses different field names, normalize into this shape before invocation.
-
-## Example Commands
-
-```bash
-bun hooks/providers/codex/session-end.hook.ts
-bun hooks/providers/codex/stop.hook.ts
-```
-
 ## Environment
 
 ```bash
 export OBSIDIAN_VAULT=~/path/to/your/vault
 export ASSISTANT_NAME=Codex
-# optional
-export ASSISTANT_MODEL=gpt-5-codex
+
+# Enrichment
+export ENRICHMENT_MODE=inline
+export SESSION_SUMMARY_ENABLED=true
+export AUTO_DISTILL_ENABLED=true
+export AUTO_DISTILL_MAX_NOTES=3
+export AUTO_DISTILL_CONFIDENCE_THRESHOLD=0.75
+
+# Model routing
+export CODEX_SUMMARY_MODEL=gpt-4.1-mini
+# default remote backend:
+# export OPENAI_API_KEY=...
+# or generic fallback
+# export SESSION_SUMMARY_MODEL=...
+
+# Optional local model
+# export LOCAL_SUMMARY_PROVIDER=ollama
+# export OLLAMA_HOST=http://127.0.0.1:11434
+# export OLLAMA_MODEL=llama3.1:8b
 ```
 
-## Notes
+## Method B Worker (optional)
 
-- No PAI/Claude memory state is required.
-- Session title/type are inferred from transcript content.
-- Learning capture uses the same keyword detection as Claude adapter.
+If using async/hybrid modes, run worker:
+
+```bash
+QUEUE_RUN_FOREVER=true bun hooks/workers/enrichment-worker.ts
+```

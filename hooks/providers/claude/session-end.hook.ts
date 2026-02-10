@@ -7,6 +7,8 @@ import { collectISC, collectThreadContent } from '../../core/session';
 import { detectDomain, detectProject, detectSessionType, getDateComponents, getISOTimestamp, isTrivialTitle, parseDateOrFallback, parseSimpleYaml, slugify, toNumber } from '../../core/common';
 import { detectModelFromTranscript, ensureDir, readHookStdin, writeTextFile } from '../../core/io';
 import { renderSessionNote } from '../../core/render';
+import { runSessionIntelligence } from '../../core/session-intelligence';
+import { enqueueSessionEnrichment } from '../../core/queue/enqueue';
 import type { CurrentWork, WorkResolution } from '../../core/types';
 
 const VAULT_PATH = process.env.OBSIDIAN_VAULT || join(homedir(), 'obsidian-vault');
@@ -123,20 +125,11 @@ export async function runClaudeSessionEndHook(): Promise<number> {
   const transcriptPath = hookInput.transcript_path || process.cwd();
   const threadContent = collectThreadContent(workPath);
   const model = detectModel(transcriptPath);
-
-  const note = renderSessionNote({
-    title,
-    sessionId: currentWork.session_id || hookInput.session_id || 'unknown',
-    domain: detectDomain(transcriptPath),
-    project: detectProject(transcriptPath),
-    model,
-    sessionType: detectSessionType(threadContent || title),
-    createdAt,
-    completedAt: getISOTimestamp(),
-    summary: title,
-    assistantName: ASSISTANT_NAME,
-    isc: collectISC(workPath),
-  });
+  const domain = detectDomain(transcriptPath);
+  const project = detectProject(transcriptPath);
+  const sessionType = detectSessionType(threadContent || title);
+  const completedAt = getISOTimestamp();
+  const mode = ((process.env.ENRICHMENT_MODE || 'inline').toLowerCase() as 'inline' | 'async' | 'hybrid');
 
   const { year, month, day, hours, minutes } = getDateComponents();
   const sessionDir = join(VAULT_PATH, 'Sessions', String(year), month);
@@ -144,6 +137,47 @@ export async function runClaudeSessionEndHook(): Promise<number> {
 
   const filename = `${year}-${month}-${day}_${hours}${minutes}_${slugify(title, 40)}.md`;
   const filepath = join(sessionDir, filename);
+
+  const request = {
+    provider: 'claude' as const,
+    title,
+    summary: title,
+    sessionType,
+    transcriptPath,
+    threadContent,
+    workPath,
+    domain,
+    project,
+  };
+
+  if (mode === 'async' || mode === 'hybrid') {
+    enqueueSessionEnrichment(VAULT_PATH, request, filepath);
+  }
+
+  const enrichment =
+    mode === 'inline' || mode === 'hybrid'
+      ? await runSessionIntelligence({
+          request,
+          vaultPath: VAULT_PATH,
+          sourceSessionFilename: filename,
+        })
+      : undefined;
+
+  const note = renderSessionNote({
+    title,
+    sessionId: currentWork.session_id || hookInput.session_id || 'unknown',
+    domain,
+    project,
+    model,
+    sessionType,
+    createdAt,
+    completedAt,
+    summary: title,
+    assistantName: ASSISTANT_NAME,
+    isc: collectISC(workPath),
+    enrichment,
+  });
+
   writeTextFile(filepath, note);
   console.error(`[ClaudeSessionCapture] Created: ${filename}`);
 
