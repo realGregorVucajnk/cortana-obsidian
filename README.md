@@ -4,78 +4,104 @@ A template for building a persistent knowledge base that captures AI session out
 
 ## What This Does
 
-- **Auto-captures sessions** — Provider adapters for Claude and Codex create structured Obsidian notes
-- **Dashboards** — Dataview-powered views of sessions by date, domain, project, and type
-- **Knowledge distillation** — Extract durable insights from session logs into reusable knowledge notes
-- **Vault health** — GitHub Actions validates frontmatter, tags, and detects orphan notes
+- Auto-captures sessions via provider adapters (Claude and Codex)
+- Generates human-readable session context (executive summary, decisions, digest, git context)
+- Auto-distills high-confidence knowledge notes
+- Provides async queue/worker scaffold for scalable enrichment
+- Validates vault quality via CI checks
+
+## Start Here
+
+If this is your first time, begin with [`START_HERE.md`](./START_HERE.md).
+
+## Documentation Map
+
+| Audience | Read First | Then Read |
+|----------|------------|-----------|
+| Human operator | `START_HERE.md` | `HOOKS.claude.md` or `HOOKS.codex.md`, then `docs/session-intelligence/runbook.md` |
+| AI operator | `AGENT_ONBOARDING.md` | `HOOKS.md`, `docs/what-gets-captured.md`, `docs/session-intelligence/roadmap.md` |
+| Contributor | `README.md` | `docs/contributing-docs.md`, `CLAUDE.md`, `HOOKS.md` |
 
 ## Quick Start
 
-1. Use this template or clone the repo
-2. Open the folder as a vault in Obsidian
-3. Install required plugins (Obsidian will prompt — manifests are pre-configured)
-4. Configure your provider hooks (see [HOOKS.md](./HOOKS.md))
+1. Clone/open the repo as your Obsidian vault.
+2. Pick runtime setup:
+- Claude: [`HOOKS.claude.md`](./HOOKS.claude.md)
+- Codex: [`HOOKS.codex.md`](./HOOKS.codex.md)
+3. Set minimum env vars:
+
+```bash
+export OBSIDIAN_VAULT=~/path/to/your/vault
+export ENRICHMENT_MODE=inline
+export SESSION_SUMMARY_ENABLED=true
+export AUTO_DISTILL_ENABLED=true
+export OPENAI_API_KEY=...
+```
+
+## Enrichment Modes and Defaults
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `ENRICHMENT_MODE` | `inline` | inline now, async via queue, or hybrid |
+| `SESSION_SUMMARY_ENABLED` | `true` | enable LLM/fallback summary generation |
+| `AUTO_DISTILL_ENABLED` | `true` | auto-create knowledge notes |
+| `AUTO_DISTILL_MAX_NOTES` | `3` | cap notes created per session |
+| `AUTO_DISTILL_CONFIDENCE_THRESHOLD` | `0.75` | quality threshold for distill |
+| `SESSION_SUMMARY_MODEL` | provider default | generic summary model override |
+| `CLAUDE_SUMMARY_MODEL` / `CODEX_SUMMARY_MODEL` | provider defaults | provider-specific model override |
+| `LOCAL_SUMMARY_PROVIDER` | unset | set `ollama` for local inference |
+
+## What Gets Captured
+
+See [`docs/what-gets-captured.md`](./docs/what-gets-captured.md) for exact source data, inferred fields, and exclusions.
+
+## First-Run Validation Checklist
+
+After your first session, verify:
+1. A new file exists in `Sessions/YYYY/MM/*.md`.
+2. The note includes:
+- Executive Summary
+- Key Decisions and Why
+- Recommended to Save
+- Digest
+- Git Context
+3. Frontmatter includes `summary_engine`, `distill_count`, `enrichment_mode`.
+4. If confidence threshold is met, new notes appear under `Knowledge/`.
+
+## Examples
+
+- Enriched session note: [`docs/examples/session-note-enriched.md`](./docs/examples/session-note-enriched.md)
+- Distilled decision note: [`docs/examples/knowledge-note-decision.md`](./docs/examples/knowledge-note-decision.md)
+- Async queue job: [`docs/examples/queue-job.json`](./docs/examples/queue-job.json)
 
 ## Folder Structure
 
 ```
 .
-├── Sessions/           # Chronological session logs (YYYY/MM/)
+├── Sessions/
 ├── Knowledge/
-│   ├── decisions/      # Architectural and design decisions
-│   ├── patterns/       # Reusable patterns discovered
-│   └── learnings/      # Lessons learned from successes and failures
-├── Projects/           # Project-specific index notes
-├── Templates/          # Templater templates for note creation
-├── Dashboards/         # Dataview-powered overview pages
-├── _archive/           # Completed or superseded notes
-├── hooks/              # Shared core + provider hook adapters
-├── .github/workflows/  # Vault health CI
-└── .obsidian/          # Plugin configs (manifests + settings, no bundles)
+├── Dashboards/
+├── hooks/
+│   ├── core/
+│   ├── providers/
+│   └── workers/
+├── docs/
+│   ├── session-intelligence/
+│   └── examples/
+└── .github/workflows/
 ```
 
-## Documentation
+## Core Docs
 
-- **[CLAUDE.md](./CLAUDE.md)** — Vault conventions, frontmatter schema, controlled tags
-- **[HOOKS.md](./HOOKS.md)** — Hook architecture and provider matrix
-- **[HOOKS.claude.md](./HOOKS.claude.md)** — Claude setup guide
-- **[HOOKS.codex.md](./HOOKS.codex.md)** — Codex setup guide
-- **[docs/session-intelligence/architecture.md](./docs/session-intelligence/architecture.md)** — Method A/B/C architecture
-- **[docs/session-intelligence/roadmap.md](./docs/session-intelligence/roadmap.md)** — Forward roadmap and phase gates
-- **[docs/session-intelligence/runbook.md](./docs/session-intelligence/runbook.md)** — Operational runbook
-
-## Required Plugins
-
-| Plugin | Purpose |
-|--------|---------|
-| [Dataview](https://github.com/blacksmithgu/obsidian-dataview) | Powers all dashboard queries |
-| [Templater](https://github.com/SilentVoid13/Templater) | Dynamic templates for manual note creation |
-| [Calendar](https://github.com/liamcain/obsidian-calendar-plugin) | Visual daily note navigation |
-| [obsidian-git](https://github.com/Vinzent03/obsidian-git) | Auto git sync |
-
-Plugin manifests are included so Obsidian knows which versions to install. The actual plugin code is not bundled — Obsidian will download it on first open.
-
-## Frontmatter Schema
-
-Every note uses a consistent frontmatter schema defined in [CLAUDE.md](./CLAUDE.md). Required fields:
-
-```yaml
-date: 2026-01-15
-type: session        # session | decision | pattern | learning | knowledge
-domain: personal     # work | personal | opensource
-status: completed    # active | completed | archived
-tags: [cortana-session, implementation]
-summary: "One-line description of what happened"
-```
-
-## GitHub Actions
-
-The included workflow (`.github/workflows/vault-health.yml`) runs weekly and on push to validate:
-- Required frontmatter fields on all session notes
-- Tags against the controlled vocabulary
-- Orphan note detection (notes with no inbound links)
-- Archive candidates (completed sessions older than 90 days)
-- Vault statistics dashboard auto-update
+- [`CLAUDE.md`](./CLAUDE.md)
+- [`HOOKS.md`](./HOOKS.md)
+- [`HOOKS.claude.md`](./HOOKS.claude.md)
+- [`HOOKS.codex.md`](./HOOKS.codex.md)
+- [`docs/session-intelligence/architecture.md`](./docs/session-intelligence/architecture.md)
+- [`docs/session-intelligence/roadmap.md`](./docs/session-intelligence/roadmap.md)
+- [`docs/session-intelligence/runbook.md`](./docs/session-intelligence/runbook.md)
+- [`docs/troubleshooting.md`](./docs/troubleshooting.md)
+- [`docs/contributing-docs.md`](./docs/contributing-docs.md)
 
 ## License
 
