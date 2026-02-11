@@ -135,3 +135,17 @@ Hooks are loaded at **session start**. Changes to hook files only take effect wh
 - **No folder-based project split** — Use `domain` and `project` frontmatter, not folder hierarchies.
 - **No manual dashboards** — All dashboards use Dataview queries. Never maintain lists by hand.
 - **No tag sprawl** — Only use tags from the controlled vocabulary above.
+
+## Vault Access Pattern (Two-Pass Retrieval)
+
+When accessing vault knowledge — whether via `/recall` or ad-hoc ("look up that decision about enrichment") — follow the two-pass pattern to minimize context usage:
+
+1. **Check auto-loaded summaries first** — VaultContextLoader already injected frontmatter summaries at session start (look for "Vault Knowledge (Auto-loaded)" in your context). If the answer is there, stop. Zero additional cost.
+2. **Grep, don't bulk-read** — Use `Grep` to search `summary:` fields and note bodies for the topic. Read only the frontmatter (first 15 lines) of matches to assess relevance.
+3. **Read selectively** — Only `Read` full note bodies for the 2-3 most relevant matches. Never bulk-read an entire directory.
+4. **Cap at 5 full reads** — If you need more than 5 note bodies, you should be using `/recall` with filters, not ad-hoc access.
+
+**What NOT to do:**
+- Do not read every `.md` file in a directory to find information
+- Do not read full note bodies when the frontmatter summary answers the question
+- Do not skip the auto-loaded summaries and go straight to filesystem search
