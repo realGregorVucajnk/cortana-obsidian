@@ -1,0 +1,24 @@
+{
+  "startedAt": "2026-02-13T16:22:04.130Z",
+  "completedAt": "2026-02-13T16:22:30.378Z",
+  "config": {
+    "vaultPath": "/Users/gregorvucajnk/personal/cortana-obsidian",
+    "dryRun": false,
+    "backfillDays": 30,
+    "maxSessions": 50,
+    "llmDelayMs": 1000,
+    "llmTimeoutMs": 30000,
+    "significanceThreshold": 0.3,
+    "knowledgeConfidence": 0.75,
+    "autoCommit": false
+  },
+  "discovered": 35,
+  "filtered": 2,
+  "processed": 24,
+  "duplicateSkipped": 9,
+  "belowThresholdSkipped": 0,
+  "sessionNotesWritten": 24,
+  "knowledgeNotesWritten": 0,
+  "digestsWritten": 2,
+  "errors": []
+}
