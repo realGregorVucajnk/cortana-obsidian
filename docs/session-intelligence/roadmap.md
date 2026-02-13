@@ -35,15 +35,31 @@ Gates to ship:
 - Duplicate protection on patch-back is reliable.
 - Mean queue completion under acceptable threshold.
 
-## Phase 4+ (Planned)
+## Phase 4 (In Progress): Method D Daily Batch
+
+Status: in progress.
+
+Deliverables:
+- Claude Desktop session discovery (local-agent-mode-sessions).
+- Claude Code session discovery (history.jsonl + project transcripts).
+- Daily batch extraction pipeline with LLM analysis and heuristic fallback.
+- Cross-session daily digest synthesis.
+- Multi-level deduplication (exact session_id, slug match, Jaccard similarity).
+- Watermark-based incremental processing with stale-lock recovery.
+- Knowledge note extraction with confidence gating.
+- Pipeline state management (watermark.json, lock.json, run logs).
+
+## Phase 5+ (Planned)
 
 1. Personalized relevance ranking from user feedback.
 2. Retrieval-augmented summarization using prior project notes.
 3. Policy filters by domain/project sensitivity.
-4. Daily/weekly digest synthesis from session intelligence outputs.
+
+Note: Daily/weekly digest synthesis (previously item 4) is shipping in Phase 4.
 
 ## Tradeoffs Summary
 
 - Method A: lowest complexity, immediate value, synchronous latency.
 - Method B: resilient and scalable, more moving parts.
 - Method C: best user experience, highest implementation complexity.
+- Method D: broadest coverage (Code + Desktop), deepest analysis budget, batch latency.

@@ -6,6 +6,9 @@
 .hotreload/
 .hooks-queue/
 
+# Pipeline local state (watermarks, locks, run logs)
+.pipeline-state/
+
 # Plugin bundles — install via Obsidian, don't redistribute
 .obsidian/plugins/*/main.js
 .obsidian/plugins/*/styles.css
