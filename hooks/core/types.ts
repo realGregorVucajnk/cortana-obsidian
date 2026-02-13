@@ -71,6 +71,7 @@ export interface SessionEnrichment {
   summaryModel: string;
   distillCount: number;
   enrichmentMode: 'inline' | 'async' | 'hybrid';
+  enrichedAt?: string;  // ISO timestamp of when re-enrichment was applied
 }
 
 export interface SessionNotePayload {
