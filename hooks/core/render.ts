@@ -85,7 +85,7 @@ type: session
 session_type: ${note.sessionType}
 domain: ${note.domain}
 status: completed${note.model ? `\nmodel: ${note.model}` : ''}
-${note.enrichment?.summaryEngine ? `summary_engine: ${note.enrichment.summaryEngine}` : ''}${note.enrichment?.summaryModel ? `\nsummary_model: ${note.enrichment.summaryModel}` : ''}${note.enrichment ? `\ndistill_count: ${note.enrichment.distillCount}\nenrichment_mode: ${note.enrichment.enrichmentMode}` : ''}
+${note.enrichment?.summaryEngine ? `summary_engine: ${note.enrichment.summaryEngine}` : ''}${note.enrichment?.summaryModel ? `\nsummary_model: ${note.enrichment.summaryModel}` : ''}${note.enrichment ? `\ndistill_count: ${note.enrichment.distillCount}\nenrichment_mode: ${note.enrichment.enrichmentMode}` : ''}${note.enrichment?.enrichedAt ? `\nenriched_at: "${note.enrichment.enrichedAt}"` : ''}
 tags:
 ${tags.map((t) => `  - ${t}`).join('\n')}
 summary: "${oneLine}"
