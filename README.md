@@ -44,7 +44,12 @@ A template repository for building a persistent knowledge base in [Obsidian](htt
    export OPENAI_API_KEY=sk-...          # or use Ollama (see below)
    ```
 
-4. **Run a session** — After your first AI coding session, check `Sessions/` for your first note.
+4. **Install PII detection hooks**
+   ```bash
+   ./scripts/install-hooks.sh
+   ```
+
+5. **Run a session** — After your first AI coding session, check `Sessions/` for your first note.
 
 ### Optional: Local LLM with Ollama
 

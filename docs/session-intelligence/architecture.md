@@ -67,7 +67,7 @@ Flow:
 | Transcript | `~/.claude/projects/{encoded-path}/{sessionId}.jsonl` | JSONL — message objects with `role`, `content`, `tool_use`, `tool_result` |
 | WORK tracking | `~/.claude/MEMORY/WORK/{dated-dir}/META.yaml` | YAML — session metadata, status, task count |
 
-**Encoded path:** Claude Code URL-encodes the project directory (e.g., `/Users/gregor/personal/cortana-obsidian` becomes `-Users-gregor-personal-cortana-obsidian`).
+**Encoded path:** Claude Code URL-encodes the project directory (e.g., `~/personal/my-vault` becomes `-Users-alice-personal-my-vault`).
 
 ### Claude Desktop
 

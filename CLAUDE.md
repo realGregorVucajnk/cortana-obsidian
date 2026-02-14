@@ -7,6 +7,23 @@ This vault is a **persistent knowledge base** that captures insights, decisions,
 **What goes here:** Durable knowledge, decisions, patterns, learnings, and session logs worth preserving.
 **What stays in PAI:** Active session state, auto-memory, working context, ephemeral notes.
 
+## PUBLIC REPOSITORY — No PII Allowed
+
+This is a **public template repository**. Every file committed here is visible to the internet.
+
+**Non-negotiable rules:**
+- NEVER commit real usernames, email addresses, or full names
+- NEVER commit real project names from work or personal repos
+- NEVER commit API keys, tokens, or secrets
+- NEVER commit absolute home directory paths (use `~` or generic paths)
+- Use generic examples: `acme-api`, `my-cli-tool`, `user@example.com`
+
+**Enforcement (2 layers):**
+1. **Pre-push hook** — scans all tracked files, blocks push to origin
+2. **CI workflow** — `pii-scan` job runs on every push/PR, catches bypasses
+
+No pre-commit hook (obsidian-git auto-commits would silently fail). Patterns are defined in `.pii-patterns`. Run `./scripts/install-hooks.sh` after cloning.
+
 ## Vault Conventions
 
 ### Frontmatter Schema

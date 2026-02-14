@@ -1,5 +1,9 @@
 name: Vault Health
 on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
   schedule:
     - cron: '0 9 * * 1'  # Weekly Monday 9am UTC
   workflow_dispatch:
@@ -9,6 +13,14 @@ permissions:
   issues: write
 
 jobs:
+  pii-scan:
+    name: PII Detection
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Scan for PII patterns
+        run: ./scripts/pii-check.sh push
+
   frontmatter-lint:
     name: Validate Frontmatter
     runs-on: ubuntu-latest

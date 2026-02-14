@@ -55,6 +55,14 @@ export OLLAMA_MODEL=llama3.1:8b
 - Claude: use wrapper scripts in `HOOKS.claude.md`.
 - Codex: use provider scripts in `HOOKS.codex.md`.
 
+## 3.5) Install PII detection hooks
+
+```bash
+./scripts/install-hooks.sh
+```
+
+This enables pre-push scanning for accidental PII leaks. Required for public repos.
+
 ## 4) Run a first test session
 
 Trigger one short coding session and let SessionEnd complete.

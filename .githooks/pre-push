@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Pre-push hook: scan all tracked files for PII patterns before pushing.
+# Install via: ./scripts/install-hooks.sh
+set -euo pipefail
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+exec "$REPO_ROOT/scripts/pii-check.sh" push
