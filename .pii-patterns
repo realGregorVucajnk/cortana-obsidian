@@ -1,0 +1,23 @@
+# PII Detection Patterns
+# One ERE (Extended Regular Expression) per line. Lines starting with # are comments.
+# Prefix a pattern with [i] for case-insensitive matching.
+#
+# POSIX ERE only — no PCRE (?i), \s, \d. Use [[:space:]], [0-9], grep -iE.
+
+# API keys and tokens (high-confidence, length-gated)
+sk-[A-Za-z0-9_-]{20,}
+ghp_[A-Za-z0-9]{20,}
+gho_[A-Za-z0-9]{20,}
+github_pat_[A-Za-z0-9_]{20,}
+
+# Secrets in assignments (case-insensitive)
+[i] (api[_-]?key|api[_-]?secret|password|passwd)[[:space:]]*[:=][[:space:]]*[^[:space:]"']{8,}
+
+# Home directory absolute paths
+/Users/[a-zA-Z0-9._-]+/
+/home/[a-zA-Z0-9._-]+/
+
+# === ADD YOUR OWN PATTERNS BELOW ===
+# your-github-username
+# your-real-name
+# your-work-org-name
