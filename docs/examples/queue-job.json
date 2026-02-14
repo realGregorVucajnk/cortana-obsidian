@@ -1,0 +1,22 @@
+{
+  "id": "1770759750503-investigate-flaky-ci-and",
+  "createdAt": "2026-02-10T21:42:30.123Z",
+  "updatedAt": "2026-02-10T21:42:31.456Z",
+  "status": "pending",
+  "attempts": 0,
+  "retryPolicy": {
+    "maxAttempts": 3,
+    "backoffMs": 5000
+  },
+  "payload": {
+    "provider": "codex",
+    "title": "Investigate flaky CI and improve docs",
+    "summary": "Investigate flaky CI and improve docs",
+    "sessionType": "debugging",
+    "transcriptPath": "/tmp/transcript.jsonl",
+    "threadContent": "",
+    "domain": "personal",
+    "project": "cortana-obsidian"
+  },
+  "outputSessionPath": "/vault/Sessions/2026/02/2026-02-10_1642_investigate-flaky-ci-and-improve-docs.md"
+}

@@ -1,0 +1,22 @@
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/graph.json
+.trash/
+.DS_Store
+.hotreload/
+.hooks-queue/
+
+# Pipeline local state (watermarks, locks, run logs)
+.pipeline-state/
+
+# Plugin bundles — install via Obsidian, don't redistribute
+.obsidian/plugins/*/main.js
+.obsidian/plugins/*/styles.css
+
+# Personal vault content — keep locally, never push
+Sessions/20*/
+Knowledge/decisions/20*.md
+Knowledge/learnings/20*.md
+Knowledge/patterns/20*.md
+Projects/*.md
+!Projects/README.md

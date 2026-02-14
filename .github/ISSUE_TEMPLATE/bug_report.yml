@@ -1,0 +1,97 @@
+name: Bug Report
+description: Report a bug in the hook pipeline, enrichment, or vault structure
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. Please fill out the sections below to help us reproduce and fix the issue.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happened? What did you expect to happen?
+      placeholder: "Session note was created but the Executive Summary section is empty..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: How can we reproduce this issue?
+      placeholder: |
+        1. Set ENRICHMENT_MODE=inline
+        2. Run a coding session with Claude Code
+        3. Check the generated session note in Sessions/
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What should have happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened? Include error messages or log output if available.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: provider
+    attributes:
+      label: Provider
+      description: Which AI coding tool are you using?
+      options:
+        - Claude Code
+        - OpenAI Codex
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: enrichment-mode
+    attributes:
+      label: Enrichment Mode
+      description: Which enrichment mode is configured?
+      options:
+        - inline
+        - async
+        - hybrid
+        - Not sure
+    validations:
+      required: true
+
+  - type: dropdown
+    id: llm-provider
+    attributes:
+      label: LLM Provider
+      description: What are you using for enrichment?
+      options:
+        - OpenAI API
+        - Ollama (local)
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: Operating System
+      placeholder: "macOS 15.2 / Ubuntu 24.04 / Windows 11"
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other information that might help (logs, screenshots, config snippets).
